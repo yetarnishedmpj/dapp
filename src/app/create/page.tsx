@@ -23,31 +23,45 @@ export default function CreateListing() {
 
   async function listNFTForSale() {
     const { name, description, price, category, isAuction, duration, royalty } = formInput;
-    if (!name || !description || !price || !marketplaceContract) return;
+    console.log("Listing item triggered with:", { name, description, price, category, isAuction, duration, royalty });
+    
+    if (!name || !description || !price) {
+      alert("Please fill in all required fields (Name, Description, Price).");
+      return;
+    }
+    
+    if (!marketplaceContract) {
+      alert("Marketplace contract not initialized. Please connect your wallet again.");
+      return;
+    }
     
     setLoading(true);
     try {
       let imageURI = "";
       if (file) {
+        console.log("Uploading file to IPFS...");
         imageURI = await uploadFileToIPFS(file);
+        console.log("File uploaded to IPFS:", imageURI);
       } else {
-        // Fallback or alert
-        alert("Please upload an image for real IPFS integration");
+        alert("Please upload an image file.");
         setLoading(false);
         return;
       }
 
+      console.log("Uploading metadata to IPFS...");
       const metadata = await uploadJSONToIPFS({ 
         name, 
         description, 
         image: imageURI,
         category 
       });
+      console.log("Metadata uploaded to IPFS:", metadata);
 
       const priceInWei = ethers.parseEther(price);
       const royaltyNum = parseInt(royalty);
       const durationNum = parseInt(duration);
       
+      console.log("Submitting transaction to blockchain...");
       const transaction = await marketplaceContract.listItem(
         metadata, 
         priceInWei,
@@ -56,12 +70,14 @@ export default function CreateListing() {
         isAuction,
         durationNum
       );
+      console.log("Transaction submitted, waiting for confirmation...");
       await transaction.wait();
+      console.log("Transaction confirmed!");
       
       router.push('/');
     } catch (error: any) {
       console.error("Error listing item:", error);
-      alert(error.message || "Failed to list item. Ensure you have PINATA API keys set in .env.local");
+      alert(error.message || "Failed to list item. Check browser console for details.");
     } finally {
       setLoading(false);
     }
