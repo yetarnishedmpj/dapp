@@ -32,24 +32,34 @@ export default function Profile() {
 
   async function loadMyItems() {
     try {
+      console.log("Fetching my items from contract...");
       const data = await marketplaceContract!.fetchMyItems();
+      console.log("Items received:", data);
       const items = data.map((i: any) => {
-        const metadata = JSON.parse(i.metadataURI);
-        return {
-          itemId: i.itemId.toString(),
-          seller: i.seller,
-          owner: i.owner,
-          price: ethers.formatEther(i.isAuction ? i.highestBid : i.price),
-          name: metadata.name,
-          description: metadata.description,
-          image: metadata.image,
-          category: i.category,
-          sold: i.sold
-        };
-      });
+        try {
+          const metadata = JSON.parse(i.metadataURI);
+          return {
+            itemId: i.itemId.toString(),
+            seller: i.seller,
+            owner: i.owner,
+            price: ethers.formatEther(i.isAuction ? i.highestBid : i.price),
+            name: metadata.name,
+            description: metadata.description,
+            image: metadata.image,
+            category: i.category,
+            sold: i.sold
+          };
+        } catch (e) {
+          console.error("Failed to parse metadata for item", i.itemId, e);
+          return null;
+        }
+      }).filter((item: any) => item !== null);
       setItems(items);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching my items:", err);
+      if (err.code === "BAD_DATA") {
+        toast.error("Network Mismatch: Please reset your MetaMask account and refresh.");
+      }
     } finally {
       setLoading(false);
     }

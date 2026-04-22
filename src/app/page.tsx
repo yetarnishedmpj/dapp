@@ -25,29 +25,39 @@ export default function Home() {
 
   async function loadMarketplaceItems() {
     try {
+      console.log("Loading marketplace items...");
       const data = await marketplaceContract!.fetchMarketItems();
+      console.log("Items received:", data);
       const items = data.map((i: any) => {
-        const metadata = JSON.parse(i.metadataURI);
-        return {
-          itemId: i.itemId.toString(),
-          seller: i.seller,
-          creator: i.creator,
-          owner: i.owner,
-          price: ethers.formatEther(i.price),
-          royalty: i.royaltyPercentage.toString(),
-          name: metadata.name,
-          description: metadata.description,
-          image: metadata.image,
-          category: i.category,
-          isAuction: i.isAuction,
-          auctionEndTime: Number(i.auctionEndTime),
-          highestBid: ethers.formatEther(i.highestBid),
-          highestBidder: i.highestBidder,
-        };
-      });
+        try {
+          const metadata = JSON.parse(i.metadataURI);
+          return {
+            itemId: i.itemId.toString(),
+            seller: i.seller,
+            creator: i.creator,
+            owner: i.owner,
+            price: ethers.formatEther(i.price),
+            royalty: i.royaltyPercentage.toString(),
+            name: metadata.name,
+            description: metadata.description,
+            image: metadata.image,
+            category: i.category,
+            isAuction: i.isAuction,
+            auctionEndTime: Number(i.auctionEndTime),
+            highestBid: ethers.formatEther(i.highestBid),
+            highestBidder: i.highestBidder,
+          };
+        } catch (e) {
+          console.error("Failed to parse metadata", i);
+          return null;
+        }
+      }).filter((item: any) => item !== null);
       setItems(items);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching items:", err);
+      if (err.code === "BAD_DATA") {
+        toast.error("Network Mismatch: Please reset your MetaMask account and refresh.");
+      }
     } finally {
       setLoading(false);
     }

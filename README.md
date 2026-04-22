@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# D-Market V2: Hybrid C++/TypeScript DApp
 
-## Getting Started
+A high-performance NFT Marketplace built with **Next.js**, **Hardhat**, and **C++**. This project demonstrates advanced systems integration by offloading critical business logic and backend services to C++.
 
-First, run the development server:
+## 🚀 C++ Integration Highlights
 
+- **C++ Node.js Addon (N-API):** The core metadata validation and SHA-256 hashing engine is written in C++ for maximum performance and security.
+- **High-Performance C++ Backend:** A dedicated microservice built with the **httplib** C++ framework to handle marketplace analytics and indexing.
+- **Hybrid Architecture:** Demonstrates how to bridge modern Web3 frontends (TypeScript/React) with performant systems programming (C++).
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js 16, React 19, TypeScript
+- **Smart Contracts:** Solidity, Hardhat, Ethers.js
+- **Systems:** C++ (N-API, httplib), Node-Gyp, MSVC/GCC
+- **Storage:** IPFS (via Pinata)
+
+## 🏗️ Building C++ Components
+
+### 1. C++ Node Addon
+The addon is automatically built during `npm install` (via binding.gyp), but you can rebuild it manually:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx node-gyp rebuild
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. C++ Backend Server
+Navigate to the `backend` folder and run the build script:
+```bash
+cd backend
+./build.bat  # Windows
+# OR manual build
+g++ -o server.exe main.cpp -lws2_32
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📝 Features
+- **Real IPFS Uploads:** Securely pin images and metadata via Pinata.
+- **C++ Preprocessing:** Metadata is validated and hashed by a C++ engine before hitting the blockchain.
+- **Advanced Auctions:** Real-time bidding logic powered by smart contracts.
+- **Royalty Support:** Automatic royalty payments to creators.

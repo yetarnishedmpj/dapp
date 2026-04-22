@@ -37,6 +37,20 @@ export default function CreateListing() {
     
     setLoading(true);
     try {
+      // Step 1: C++ Metadata Preprocessing
+      console.log("Validating and hashing metadata via C++ Addon...");
+      const cppRes = await fetch('/api/metadata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description })
+      });
+      const cppData = await cppRes.json();
+      
+      if (!cppData.success) {
+        throw new Error(cppData.error || "C++ Validation Failed");
+      }
+      console.log("C++ Validation Success! Hash:", cppData.hash);
+
       let imageURI = "";
       if (file) {
         console.log("Uploading file to IPFS...");
@@ -68,7 +82,8 @@ export default function CreateListing() {
         royaltyNum,
         category,
         isAuction,
-        durationNum
+        durationNum,
+        { gasLimit: 1000000 } // Manual gas limit for local testing
       );
       console.log("Transaction submitted, waiting for confirmation...");
       await transaction.wait();
